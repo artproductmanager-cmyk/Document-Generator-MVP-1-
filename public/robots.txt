@@ -1,0 +1,20 @@
+# Robots.txt для Документатор
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Основные поисковые роботы
+User-agent: Googlebot
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
+User-agent: bingbot
+Allow: /
+
+# Sitemap
+Sitemap: https://dokumentator.ru/sitemap.xml
+
+# Задержка между запросами (в секундах)
+Crawl-delay: 1

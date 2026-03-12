@@ -1,0 +1,76 @@
+# Конфигурация Nginx для Документатор
+# Поместите этот файл в /etc/nginx/sites-available/dokumentator
+# Создайте симлинк: sudo ln -s /etc/nginx/sites-available/dokumentator /etc/nginx/sites-enabled/
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name dokumentator.ru www.dokumentator.ru;
+
+    # Редирект на HTTPS (раскомментируйте после установки SSL)
+    # return 301 https://$server_name$request_uri;
+
+    root /var/www/dokumentator;
+    index index.html;
+
+    # Логи
+    access_log /var/log/nginx/dokumentator_access.log;
+    error_log /var/log/nginx/dokumentator_error.log;
+
+    # Основная локация
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Кэширование статических файлов
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        access_log off;
+    }
+
+    # Отключаем логирование для favicon
+    location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+    }
+
+    # Отключаем логирование для robots.txt
+    location = /robots.txt {
+        log_not_found off;
+        access_log off;
+    }
+
+    # Gzip сжатие
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml+rss application/json application/javascript;
+    gzip_disable "MSIE [1-6]\.";
+
+    # Безопасность
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+
+    # Content Security Policy (настройте под ваши нужды)
+    # add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';" always;
+}
+
+# HTTPS конфигурация (добавится автоматически после certbot)
+# server {
+#     listen 443 ssl http2;
+#     listen [::]:443 ssl http2;
+#     server_name dokumentator.ru www.dokumentator.ru;
+#
+#     ssl_certificate /etc/letsencrypt/live/dokumentator.ru/fullchain.pem;
+#     ssl_certificate_key /etc/letsencrypt/live/dokumentator.ru/privkey.pem;
+#     include /etc/letsencrypt/options-ssl-nginx.conf;
+#     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+#
+#     root /var/www/dokumentator;
+#     index index.html;
+#
+#     # ... остальная конфигурация как в HTTP блоке
+# }

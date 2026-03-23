@@ -1,0 +1,27 @@
+name: 🚀 Deploy to ISPmanager via FTP
+
+on:
+  push:
+    branches:
+      - main  # или master — посмотри, как называется твоя основная ветка
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📤 FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./   # папка с файлами в репозитории (обычно корень)
+          server-dir: /путь/к/папке/домена/  # ЗАМЕНИ НА РЕАЛЬНЫЙ ПУТЬ
+          exclude: |
+            **/.git*
+            **/.github*
+            **/node_modules*
+            **/*.md
